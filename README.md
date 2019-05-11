@@ -28,3 +28,10 @@ Discord 是一個提供眾多功能的通訊平台，常見於許多的線上遊
 - 設定一個人最大點歌數目
 - 設定待播清單最大上限
 - 還有更多
+
+## Usage
+
+需要安裝 python 3.7 、 ffmpeg 與 requirements.txt 裡的套件
+```
+python app.py
+```
