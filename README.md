@@ -31,7 +31,8 @@ Discord 是一個提供眾多功能的通訊平台，常見於許多的線上遊
 
 ## Usage
 
-需要安裝 python 3.7 、 ffmpeg 與 requirements.txt 裡的套件
+需要安裝 Python 3.7 、 ffmpeg 與 requirements.txt 裡的套件
 ```
+pip install -r requirements.txt
 python app.py
 ```
