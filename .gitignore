@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+*.cover
+.pytest_cache/
+
+# Config
+Config.py
+
+# VS CODE
+.vscode/
