@@ -1,12 +1,13 @@
 from unittest import TestCase
 import youtube_dl
+import pytest
 
 class TestYoutubeDl(TestCase):
     # 執行每個函數前會先執行這個
     def setUp(self):
         self.ytdl_options = {
             'format': 'bestaudio/best',        #下載格式，這邊設定是音訊檔
-            'outtmpl': 'test\\data\\%(title)s',  #下載檔名和位置
+            'outtmpl': 'test\\data\\%(title)s',#下載檔名和位置
             'restrictfilenames': True,         #檔名是否可以出現'&'和空白
             'noplaylist': False,               #接不接受歌單
             'nocheckcertificate': True,        #要不要驗證SSL
@@ -33,10 +34,12 @@ class TestYoutubeDl(TestCase):
         self.assertEqual(234, data.get('duration'))
         self.assertEqual("SmashRegz", data.get('uploader'))
         self.assertTrue(data.get('thumbnail'))
+        self.assertFalse(data.get('_type'))
 
     def test_youtube_song_list_info(self):
         data = self.ytdl.extract_info(self.song_list_url, download=False)
         self.assertEqual("TEST", data.get('title'))
+        self.assertEqual("俊廷江", data.get('uploader'))
         # self.assertTrue(data.get('url'))
         # youtube 連結跟 youtube_dl 載的連結不太一樣，因為 youtube 影片的連結好像不是唯一，所以沒法測試
         self.assertEqual("Snail's House  - Grape Soda [Tasty Release]", data['entries'][0].get('title'))
@@ -45,3 +48,9 @@ class TestYoutubeDl(TestCase):
         self.assertEqual(260, data['entries'][1].get('duration'))
         self.assertEqual("Tasty", data['entries'][1].get('uploader'))
         self.assertEqual("Tasty", data['entries'][1].get('uploader'))
+        self.assertEqual('playlist', data.get('_type'))
+    
+    def test_youtube_search(self):
+        data = self.ytdl.extract_info("你我可以", download=False)
+        self.assertTrue(data['entries'][0].get('title'))
+        self.assertEqual('playlist', data.get('_type'))
