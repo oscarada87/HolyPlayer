@@ -15,3 +15,6 @@ Config.py
 
 # VS CODE
 .vscode/
+
+# downloads
+/downloads/*.mp3
