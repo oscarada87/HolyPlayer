@@ -14,7 +14,6 @@ class SingletonArgs(type):
     # dct 是 傳進來參數的字典
     def __init__(cls, name, bases, dct):
         cls._init[cls] = dct.get('__init__', None)
-        print(cls)
 
     def __call__(cls, *args, **kwargs):
         init = cls._init[cls]
@@ -24,10 +23,8 @@ class SingletonArgs(type):
         # getcallargs 將args和kwargs参数到绑定到为func的参数名；返回字典，對應参数名及其值
         if init is not None:
             key = (cls, frozenset(inspect.getcallargs(init, None, *args, **kwargs).items()))
-            print(key)
         else:
             key = cls
-            print(key)
 
         if key not in cls._instances:
             cls._instances[key] = super(SingletonArgs, cls).__call__(*args, **kwargs)
@@ -46,6 +43,7 @@ class PlayList(metaclass=SingletonArgs):
     def __init__(self, server_id, server_name):
         self._server_id = server_id
         self._server_name = server_name
+        self._current_playing = None
         self._play_list = []
         self._priority_list = []
 
@@ -56,6 +54,10 @@ class PlayList(metaclass=SingletonArgs):
     @property
     def server_name(self):
         return self._server_name
+    
+    @property
+    def current_playing(self):
+        return self._current_playing
 
     def add(self, item):
         for song in item:
@@ -81,9 +83,13 @@ class PlayList(metaclass=SingletonArgs):
 
     def next_download(self):
         if len(self._priority_list) > 0:
-            return self._priority_list[0]
+            self._current_playing = self._priority_list[0]
+            self._priority_list.pop(0)
+            return self._current_playing
         elif len(self._play_list) > 0:
-            return self._play_list[0]
+            self._current_playing = self._play_list[0]
+            self._play_list.pop(0)
+            return self._current_playing
         else:
             return None
 
