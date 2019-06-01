@@ -4,7 +4,9 @@ class Builder():
     def __init__(self, keyword, user):
         self.__ytdl_options = {
             'format': 'bestaudio/best',             #下載格式，這邊設定是音訊檔
-            'outtmpl': '..\\downloads\\%(title)s',  #下載檔名和位置
+            'outtmpl': 'downloads/%(id)s.mp3',  #下載檔名和位置
+            'extractaudio': True,                   #只留音訊檔
+            'audioformat': "mp3",                   #指定mp3格式
             'restrictfilenames': True,              #檔名是否可以出現'&'和空白
             'noplaylist': False,                    #接不接受歌單
             'nocheckcertificate': True,             #要不要驗證SSL
@@ -17,29 +19,31 @@ class Builder():
         }
         self.__ytdl = youtube_dl.YoutubeDL(self.ytdl_options)
         self.__song_info = {
+            'id': None,
             'url': None,
             'title': None,
             'duration': None,
             'uploader': None,
             'request': user,
-            'locat': None
+            'file_locat': None
         }
         self.__song_list_info = {
             'title': None,
-            'duration': None,
             'uploader': None
         }
         self.__keyword = keyword
     
     def extract_info():
+        YOUTUBE_WEBSITE = "https://www.youtube.com/watch?v="
         data = self.__ytdl.extract_info(self.__keyword, download=False)
         # url 為一首歌曲
         if data.get('_type') is None or data.get('_type') == 'video':
-            self.__song_info['url'] = self.__keyword
+            self.__song_info['id'] = data.get('id')
+            self.__song_info['url'] = YOUTUBE_WEBSITE + data.get('id')
             self.__song_info['title'] = data.get('title')
-            self.__song_info['duration'] = data.get('duration')
+            self.__song_info['duration'] = int(data.get('duration'))
             self.__song_info['uploader'] = data.get('uploader')
-            self.__song_info['locat'] = '..\\downloads\\' + data.get('title')
+            self.__song_info['file_locat'] = '..\\downloads\\' + data.get('title')
         # url 為歌單
         else if 'youtu' in self.__keyword and data.get('_type') == 'playlist':
             self.__song_list_info['title'] = data.get('title')

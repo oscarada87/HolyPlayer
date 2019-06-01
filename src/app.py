@@ -4,6 +4,7 @@ from Config import BOT_TOKEN
 # Library
 import asyncio
 import discord
+from pprint import pprint
 from discord.ext import commands
 
 # Module
@@ -25,14 +26,21 @@ class Music(commands.Cog):
             await ctx.send("You are not connected to a voice channel.")
             raise commands.CommandError("Author not connected to a voice channel.")
 
-    @commands.command()
-    async def play(self, ctx):
-        """Plays a file from the local filesystem"""
+    # Testing Function
+    # @commands.command()
+    # async def play(self, ctx):
+    #     """Plays a file from the local filesystem"""
 
-        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("../test/data/freaks.mp3"), volume=0.5)
-        ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+    #     source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("../test/data/freaks.mp3"), volume=0.5)
+    #     ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
-        await ctx.send('Now playing: {}'.format("freaks.mp3"))
+    #     await ctx.send('Now playing: {}'.format("freaks.mp3"))
+
+    # * 代表後面的參數是 **kwags
+    @commands.command(aliases=['p', '播', '播放'])
+    async def play(self, ctx, *, keyword):
+        pprint(ctx.author.name)
+        pprint(keyword)
 
     @commands.command(aliases=['dc', 'fuckoff'])
     async def disconnect(self, ctx):
