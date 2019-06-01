@@ -24,6 +24,7 @@ class Song(Item):
         self._info['duration'] = info['duration']
         self._info['request'] = info['request']
         self._file_locat = info['file_locat']
+        self._info['playlist'] = info['playlist']
     
     @property
     def file_locat(self):

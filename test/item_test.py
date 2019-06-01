@@ -11,7 +11,8 @@ class TestSong(TestCase):
             'duration': 257,
             'uploader': 'SmashRegz',
             'request': 'Oscar',
-            'file_locat': '/downloads/7M6nsbieMks.mp3'
+            'file_locat': '/downloads/7M6nsbieMks.mp3',
+            'playlist': None
         }
 
     # 執行結束後會執行這個
@@ -26,6 +27,7 @@ class TestSong(TestCase):
         self.assertEqual(self.song_info['duration'], song.info['duration'])
         self.assertEqual(self.song_info['uploader'], song.info['uploader'])
         self.assertEqual(self.song_info['request'], song.info['request'])
+        self.assertFalse(song.info['playlist'])
         self.assertEqual(self.song_info['file_locat'], song.file_locat)
         self.assertTrue(self.song_info['id'], song)
         with self.assertRaises(TypeError) as context:
@@ -43,7 +45,8 @@ class TestSongList(TestCase):
             'duration': 257,
             'uploader': 'SmashRegz',
             'request': 'Oscar',
-            'file_locat': '/downloads/7M6nsbieMks.mp3'
+            'file_locat': '/downloads/7M6nsbieMks.mp3',
+            'playlist': '饒舌'
         }
         self.song2_info = {
             'id': 'VUTGGdx4KJM',
@@ -52,7 +55,8 @@ class TestSongList(TestCase):
             'duration': 294,
             'uploader': 'SmashRegz',
             'request': 'Oscar',
-            'file_locat': '/downloads/VUTGGdx4KJM.mp3'
+            'file_locat': '/downloads/VUTGGdx4KJM.mp3',
+            'playlist': '饒舌'
         }
         self.song3_info = {
             'id': '08Ca5FAxThg',
@@ -61,7 +65,8 @@ class TestSongList(TestCase):
             'duration': 291,
             'uploader': '熊仔',
             'request': 'Oscar',
-            'file_locat': '/downloads/08Ca5FAxThg.mp3'
+            'file_locat': '/downloads/08Ca5FAxThg.mp3',
+            'playlist': '饒舌'
         }
         self.song_list_info = {
             'title': '饒舌',
