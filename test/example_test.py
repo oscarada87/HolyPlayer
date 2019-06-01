@@ -1,6 +1,9 @@
 from unittest import TestCase
+import pytest
 
 # 測試用 Class 寫法
+# 暫時跳過
+@pytest.mark.skipif()
 class TestExample01(TestCase):
     # 執行每個函數前會先執行這個
     def setUp(self):
