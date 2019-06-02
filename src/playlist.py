@@ -1,12 +1,10 @@
+import os
 import inspect
 import asyncio
 from async_timeout import timeout
 
 import discord
 from discord.ext import commands
-
-import traceback
-from functools import partial
 
 
 class SingletonArgs(type):
@@ -32,14 +30,14 @@ class SingletonArgs(type):
             cls._instances[key] = super(SingletonArgs, cls).__call__(*args, **kwargs)
         return cls._instances[key]
 
-class PlayList:
+class PlayList(metaclass=SingletonArgs):
     """A class which is assigned to each guild using the bot for Music.
     This class implements a queue and loop, which allows for different guilds to listen to different playlists
     simultaneously.
     When the bot disconnects from the Voice it's instance will be destroyed.
     """
 
-    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume')
+    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current')
 
     def __init__(self, ctx):
         self.bot = ctx.bot
@@ -50,8 +48,6 @@ class PlayList:
         self.queue = asyncio.Queue()
         self.next = asyncio.Event()
 
-        self.np = None  # Now playing message
-        self.volume = .5
         self.current = None
 
         ctx.bot.loop.create_task(self.player_loop())
@@ -84,13 +80,11 @@ class PlayList:
 
             # Make sure the FFmpeg process is cleaned up.
             source.cleanup()
+            try:
+                os.remove(song.file_locat)
+            except OSError:
+                print("File Not Found!")
             self.current = None
-
-            # try:
-            #     # We are no longer playing this song...
-            #     await self.np.delete()
-            # except discord.HTTPException:
-            #     pass
 
     def destroy(self, guild):
         """Disconnect and cleanup the player."""
