@@ -1,5 +1,5 @@
 # Config
-from Config import BOT_TOKEN
+from src.Config import BOT_TOKEN
 
 # Library
 import asyncio
@@ -8,6 +8,8 @@ from pprint import pprint
 from discord.ext import commands
 
 # Module
+from src.builder import Builder
+from src.playlist import PlayList
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -39,8 +41,27 @@ class Music(commands.Cog):
     # * 代表後面的參數是 **kwags
     @commands.command(aliases=['p', '播', '播放'])
     async def play(self, ctx, *, keyword):
-        pprint(ctx.author.name)
-        pprint(keyword)
+        author = ctx.author
+        server = {
+            'server_id': ctx.guild.id,
+            'server_name': ctx.guild.name
+        }
+        playlist = PlayList(server['server_id'], server['server_name'])
+        builder = Builder(keyword, author)
+        playlist.add(builder.get_item())
+        if ctx.voice_client.is_playing():
+            task = asyncio.create_task(wait_for_player())
+            await task
+        playlist.next_download()
+        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(playlist.current_playing.file_locat))
+        ctx.voice_client.volume = 0.5
+        ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+        await ctx.send('Now playing: {}'.format(playlist.current_playing.info['title']))
+
+    async def wait_for_player():
+        while(ctx.voice_client.is_playing()):
+            pass
+        return True
 
     @commands.command(aliases=['dc', 'fuckoff'])
     async def disconnect(self, ctx):
