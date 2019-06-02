@@ -142,3 +142,12 @@ dmypy.json
 
 # Config
 Config.py
+<<<<<<< HEAD
+=======
+
+# VS CODE
+.vscode/
+
+# downloads
+/downloads/*.mp3
+>>>>>>> 660f731ff3f5ada4c78c74577740d7855d8fb6c6
