@@ -3,6 +3,9 @@ import pytest
 from src.playlist import PlayList
 from src.builder import Builder
 
+
+# 暫時跳過
+@pytest.mark.skipif()
 class TestPlayList(TestCase):
     # 執行每個函數前會先執行這個
     def setUp(self):

@@ -1,16 +1,18 @@
-# class Singleton(type):
-#     def __init__(cls,name,bases,dic):
-#         super(Singleton,cls).__init__(name,bases,dic)
-#         cls.instance=None
-#     def __call__(cls,*args,**kw):
-#         if cls.instance is None:
-#             cls.instance=super(Singleton,cls).__call__(*args,**kw)
-#         return cls.instance
 import inspect
+import asyncio
+from async_timeout import timeout
+
+import discord
+from discord.ext import commands
+
+import traceback
+from functools import partial
+
 
 class SingletonArgs(type):
     _instances = {}
     _init = {}
+
     # dct 是 傳進來參數的字典
     def __init__(cls, name, bases, dct):
         cls._init[cls] = dct.get('__init__', None)
@@ -29,73 +31,141 @@ class SingletonArgs(type):
         if key not in cls._instances:
             cls._instances[key] = super(SingletonArgs, cls).__call__(*args, **kwargs)
         return cls._instances[key]
+
+class PlayList:
+    """A class which is assigned to each guild using the bot for Music.
+    This class implements a queue and loop, which allows for different guilds to listen to different playlists
+    simultaneously.
+    When the bot disconnects from the Voice it's instance will be destroyed.
+    """
+
+    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume')
+
+    def __init__(self, ctx):
+        self.bot = ctx.bot
+        self._guild = ctx.guild
+        self._channel = ctx.channel
+        self._cog = ctx.cog
+
+        self.queue = asyncio.Queue()
+        self.next = asyncio.Event()
+
+        self.np = None  # Now playing message
+        self.volume = .5
+        self.current = None
+
+        ctx.bot.loop.create_task(self.player_loop())
+
+    async def player_loop(self):
+        """Our main player loop."""
+        await self.bot.wait_until_ready()
+
+        while not self.bot.is_closed():
+            self.next.clear()
+
+            try:
+                # Wait for the next song. If we timeout cancel the player and disconnect...
+                async with timeout(300):  # 5 minutes...
+                    song = await self.queue.get()
+            except asyncio.TimeoutError:
+                return self.destroy(self._guild)
+
+
+            self.current = song
+            source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(song.file_locat))
+            self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
+            await self._channel.send('**:musical_note:現正撥放:musical_note: **\n {} \n:ballot_box_with_check:requested by\n{}'.format(song.info['title'], song.info['request']))
+            # source.volume = self.volume
+            self.current = song
+            # print(self.next.is_set())
+            await self.next.wait()
+            # print(self.next.is_set())
+            # print("finish waiting")
+
+            # Make sure the FFmpeg process is cleaned up.
+            source.cleanup()
+            self.current = None
+
+            # try:
+            #     # We are no longer playing this song...
+            #     await self.np.delete()
+            # except discord.HTTPException:
+            #     pass
+
+    def destroy(self, guild):
+        """Disconnect and cleanup the player."""
+        return self.bot.loop.create_task(self._cog.cleanup(guild))
+
+
+
 # class PlayList():
-#     __instances = {}
-#     def __init__():
+#     def __init__(self, ctx):
+#         self.bot = ctx.bot
+#         self._guild = ctx.guild
+#         self._channel = ctx.channel
+#         self._cog = ctx.cog
 
-#     def __new__(cls, server_id):
-#         if server_id in cls.__instances:
-#             return cls.__instances[server_id]
-#         elif:
-#             cls.__instances[server_id] = super(PlayList, cls).__new__(cls, server_id)
-        
-class PlayList(metaclass=SingletonArgs):
-    def __init__(self, server_id, server_name):
-        self._server_id = server_id
-        self._server_name = server_name
-        self._current_playing = None
-        self._play_list = []
-        self._priority_list = []
+#         self._current_playing = None
+#         # self._play_list = []
+#         # self._priority_list = []
 
-    @property
-    def server_id(self):
-        return self._server_id
-    
-    @property
-    def server_name(self):
-        return self._server_name
-    
-    @property
-    def current_playing(self):
-        return self._current_playing
+#         # self.np = None
+#         self.queue = asyncio.Queue()
+#         self.next = asyncio.Event()
+#         ctx.bot.loop.create_task(self.player_loop())
 
-    def add(self, item):
-        for song in item:
-            self._play_list.append(song)
-    
-    def remove(self, num):
-        if not isinstance(num, int):
-            raise TypeError("Remove song need to enter integer!")
-        count = 1
-        for song in self._priority_list:
-            if count == num:
-                self._priority_list.remove(song)
-                return
-            else:
-                count += 1
-        for song in self._play_list:
-            if count == num:
-                self._play_list.remove(song)
-                return
-            else:
-                count += 1
-        raise ValueError("Index out of playlist length!")
+#     @property
+#     def guild(self):
+#         return self._guild
 
-    def next_download(self):
-        if len(self._priority_list) > 0:
-            self._current_playing = self._priority_list[0]
-            self._priority_list.pop(0)
-            return self._current_playing
-        elif len(self._play_list) > 0:
-            self._current_playing = self._play_list[0]
-            self._play_list.pop(0)
-            return self._current_playing
-        else:
-            return None
+#     @property
+#     def current_playing(self):
+#         return self._current_playing
 
-    # iterator
-    def __iter__(self):
-        for song in self._priority_list:
-            yield song
-        for song in self._play_list:
-            yield song
+#     async def player_loop(self):
+#         """Our main player loop."""
+#         await self.bot.wait_until_ready()
+
+#         while not self.bot.is_closed():
+#             self.next.clear()
+#             try:
+#                 # Wait for the next song. If we timeout cancel the player and disconnect...
+#                 async with timeout(300):  # 5 minutes...
+#                     song = await self.queue.get()
+#             except asyncio.TimeoutError:
+#                 return self.destroy(self._guild)
+
+#             # if not isinstance(song, YTDLSource):
+#             #     # Source was probably a stream (not downloaded)
+#             #     # So we should regather to prevent stream expiration
+#             #     try:
+#             #         source = await YTDLSource.regather_stream(song, loop=self.bot.loop)
+#             #     except Exception as e:
+#             #         await self._channel.send(f'There was an error processing your song.\n'
+#             #                                  f'```css\n[{e}]\n```')
+#             #         continue
+
+#             # source.volume = self.volume
+#             self._current_playing = song
+#             source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(song.file_locat))
+#             self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
+#             await self._channel.send('**Now Playing:**\n {} \nrequested by {}'.format(song.info['title'], song.info['request']))
+#             print("add to queue")
+#             print(self.next.is_set())
+#             await self.next.wait()
+#             print(self.next.is_set())
+#             print("finish waiting")
+
+#             # Make sure the FFmpeg process is cleaned up.
+#             source.cleanup()
+#             self._current_playing = None
+#             # try:
+#             #     # We are no longer playing this song...
+#             #     await self.np.delete()
+#             # except discord.HTTPException:
+#             #     pass
+
+#     def destroy(self, guild):
+#         """Disconnect and cleanup the player."""
+#         return self.bot.loop.create_task(self._cog.cleanup(guild))
+
