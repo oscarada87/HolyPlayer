@@ -30,12 +30,16 @@ class Song(Item):
     def file_locat(self):
         return self._file_locat
 
-    # overload == operation for song , compare with id
+    # overload == operator for song ,compare with id
     def __eq__(self, other):
         if self._info['id'] == other:
             return True
         else:
             return False
+
+    # overload < operator for song ,using in proirity queue
+    def __lt__(self, other):
+        return False
 
     def add_song(self):
         raise TypeError('Song type can\'t add another Song!')
