@@ -51,29 +51,32 @@ class Music(commands.Cog):
 
     @commands.command(name='connect', aliases=['join'])
     async def connect_(self, ctx, *, channel: discord.VoiceChannel = None):
-        if not channel:
-            try:
-                channel = ctx.author.voice.channel
-            except AttributeError:
-                raise InvalidVoiceChannel(
-                    'No channel to join. Please either specify a valid channel or join one.')
+        # 若 author 的 voice 不為空（代表有在某個 channel 中）
+        if ctx.author.voice:
+            channel = ctx.author.voice.channel
 
-        vc = ctx.voice_client
+            # 抓取 bot 當前的 voice_client
+            vc = ctx.voice_client
 
-        if vc:
-            if vc.channel.id == channel.id:
-                return
-            try:
-                await vc.move_to(channel)
-            except asyncio.TimeoutError:
-                raise VoiceConnectionError(
-                    f'Moving to channel: <{channel}> timed out.')
+            if vc is not None:
+                # 若頻道相同則不做事
+                if vc.channel.id == channel.id:
+                    return
+
+                try:
+                    await vc.move_to(channel)
+                except asyncio.TimeoutError:
+                    raise commands.CommandError(
+                        f'Moving to channel: <{channel}> timed out.')
+            else:
+                try:
+                    await channel.connect()
+                except asyncio.TimeoutError:
+                    raise commands.CommandError(
+                        f'Connecting to channel: <{channel}> timed out.')
         else:
-            try:
-                await channel.connect()
-            except asyncio.TimeoutError:
-                raise VoiceConnectionError(
-                    f'Connecting to channel: <{channel}> timed out.')
+            raise commands.CommandError(
+                'No channel to join. Please either specify a valid channel or join one.')
 
         await ctx.send(f'Connected to: **{channel}**', delete_after=20)
 
