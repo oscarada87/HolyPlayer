@@ -12,6 +12,7 @@ import itertools
 from src.builder import Builder
 from src.playlist import PlayList
 
+
 class Music(commands.Cog):
     """Music related commands."""
 
@@ -49,12 +50,13 @@ class Music(commands.Cog):
         return player
 
     @commands.command(name='connect', aliases=['join'])
-    async def connect_(self, ctx, *, channel: discord.VoiceChannel=None):
+    async def connect_(self, ctx, *, channel: discord.VoiceChannel = None):
         if not channel:
             try:
                 channel = ctx.author.voice.channel
             except AttributeError:
-                raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
+                raise InvalidVoiceChannel(
+                    'No channel to join. Please either specify a valid channel or join one.')
 
         vc = ctx.voice_client
 
@@ -64,12 +66,14 @@ class Music(commands.Cog):
             try:
                 await vc.move_to(channel)
             except asyncio.TimeoutError:
-                raise VoiceConnectionError(f'Moving to channel: <{channel}> timed out.')
+                raise VoiceConnectionError(
+                    f'Moving to channel: <{channel}> timed out.')
         else:
             try:
                 await channel.connect()
             except asyncio.TimeoutError:
-                raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
+                raise VoiceConnectionError(
+                    f'Connecting to channel: <{channel}> timed out.')
 
         await ctx.send(f'Connected to: **{channel}**', delete_after=20)
 
@@ -99,7 +103,7 @@ class Music(commands.Cog):
 
         vc.pause()
         await ctx.send(f'**`{ctx.author}`**: 暫停了撥放器!')
-    
+
     @commands.command(name='resume')
     async def resume_(self, ctx):
         vc = ctx.voice_client
@@ -126,7 +130,7 @@ class Music(commands.Cog):
 
         vc.stop()
         await ctx.send(f'**`{ctx.author}`**: 跳過了這首歌!')
-    
+
     @commands.command(name='queue', aliases=['q', 'playlist'])
     async def queue_info(self, ctx, *, page=1):
         vc = ctx.voice_client
@@ -139,11 +143,13 @@ class Music(commands.Cog):
             return await ctx.send('There are currently no more queued songs.')
 
         # Grab up to 5 entries from the queue...
-        upcoming = list(itertools.islice(player.queue._queue, (page-1)*10, page*10))
+        upcoming = list(itertools.islice(
+            player.queue._queue, (page-1)*10, page*10))
         fmt = ''
         for song in upcoming:
             duration = self.seconds_to_minutes_string(song.info['duration'])
-            fmt += "**{} | {} \n:pencil2:by:{}`**\n".format(song.info["title"], duration, song.info['request'])
+            fmt += "**{} | {} \n:pencil2:by:{}`**\n".format(
+                song.info["title"], duration, song.info['request'])
         embed = discord.Embed(title=f'播放佇列 - 第{page}頁', description=fmt)
 
         await ctx.send(embed=embed)
@@ -179,7 +185,8 @@ class Music(commands.Cog):
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),
-                description='Relatively simple music bot example')
+                   description='Relatively simple music bot example')
+
 
 @bot.event
 async def on_ready():
