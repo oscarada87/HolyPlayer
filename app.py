@@ -85,8 +85,23 @@ class Music(commands.Cog):
         player = self.get_player(ctx)
         item = Builder(search, ctx.author).get_item()
         for song in iter(item):
-            await player.queue.put(song)
+            await player.queue.put((2, song))
             await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
+    
+    @commands.command(name='insert', aliases=['X', 'x','插播', '插'])
+    async def insert_(self, ctx, *, search: str):
+        await ctx.trigger_typing()
+
+        vc = ctx.voice_client
+
+        if not vc:
+            await ctx.invoke(self.connect_)
+
+        player = self.get_player(ctx)
+        item = Builder(search, ctx.author).get_item()
+        for song in iter(item):
+            await player.queue.put((1, song))
+            await ctx.send("成功插入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
 
     @commands.command(name='pause')
     async def pause_(self, ctx):
@@ -141,9 +156,9 @@ class Music(commands.Cog):
         # Grab up to 5 entries from the queue...
         upcoming = list(itertools.islice(player.queue._queue, (page-1)*10, page*10))
         fmt = ''
-        for song in upcoming:
-            duration = self.seconds_to_minutes_string(song.info['duration'])
-            fmt += "**{} | {} \n:pencil2:by:{}`**\n".format(song.info["title"], duration, song.info['request'])
+        for item in upcoming:
+            duration = self.seconds_to_minutes_string(item[1].info['duration'])
+            fmt += "**{} | {} \n:pencil2:by:{}`**\n".format(item[1].info["title"], duration, item[1].info['request'])
         embed = discord.Embed(title=f'播放佇列 - 第{page}頁', description=fmt)
 
         await ctx.send(embed=embed)
