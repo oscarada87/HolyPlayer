@@ -34,16 +34,6 @@ class Music(commands.Cog):
             raise commands.NoPrivateMessage
         return True
 
-    def get_player(self, ctx):
-        """Retrieve the guild player, or generate one."""
-        try:
-            player = self.players[ctx.guild.id]
-        except KeyError:
-            player = Player(ctx)
-            self.players[ctx.guild.id] = player
-
-        return player
-
     @commands.command(name='connect', aliases=['join'])
     async def connect_(self, ctx, *, channel: discord.VoiceChannel = None):
         # 若 author 的 voice 不為空（代表有在某個 channel 中）
@@ -84,7 +74,7 @@ class Music(commands.Cog):
         if not vc:
             await ctx.invoke(self.connect_)
 
-        player = self.get_player(ctx)
+        player = Player(ctx)
         item = Builder(search, ctx.author).get_item()
         for song in iter(item):
             await player.queue.put((2, song))
@@ -99,7 +89,7 @@ class Music(commands.Cog):
         if not vc:
             await ctx.invoke(self.connect_)
 
-        player = self.get_player(ctx)
+        player = Player(ctx)
         item = Builder(search, ctx.author).get_item()
         for song in iter(item):
             await player.queue.put((1, song))
@@ -151,7 +141,7 @@ class Music(commands.Cog):
         if not vc or not vc.is_connected():
             return await ctx.send('I am not currently connected to voice!', delete_after=20)
 
-        player = self.get_player(ctx)
+        player = Player(ctx)
         if player.queue.empty():
             return await ctx.send('There are currently no more queued songs.')
 
@@ -180,7 +170,7 @@ class Music(commands.Cog):
         if not vc or not vc.is_connected():
             return await ctx.send('I am not currently connected to voice!', delete_after=20)
 
-        player = self.get_player(ctx)
+        player = Player(ctx)
         if not player.current:
             return await ctx.send('I am not currently playing anything!')
         else:
@@ -232,7 +222,7 @@ class Music(commands.Cog):
         if not vc:
             await ctx.invoke(self.connect_)
 
-        player = self.get_player(ctx)
+        player = Player(ctx)
         item = Builder(results[int(msg.content)-1]
                        ['url'], ctx.author).get_item()
         for song in iter(item):
