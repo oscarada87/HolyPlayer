@@ -210,15 +210,16 @@ class Music(commands.Cog):
             try:
                 num = int(m.content)
             except:
-                print("An Error occur!")
-                await ctx.send(":x: 錯誤產生! :x: ")
                 return False
             return m.author == ctx.author and m.channel == ctx.channel and num in checklist
 
         try:
             msg = await bot.wait_for('message', check=check, timeout=30)
         except asyncio.TimeoutError:
-            await ctx.send(":x: 等候逾時 :x: ")
+            await ctx.send(":x: 等候逾時! :x: ")
+        except:
+            await ctx.send(":x: 錯誤產生! :x: ")
+            return
 
         vc = ctx.voice_client
 
