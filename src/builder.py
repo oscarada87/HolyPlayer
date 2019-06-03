@@ -85,18 +85,3 @@ class Builder():
         
         else:
             raise ValueError("Extract information failed!")
-
-    def get_search(self):
-        result = []
-        text = urllib.parse.quote(self._keyword)
-        YOUTUBE_SEARCH = "https://www.youtube.com/results?search_query={}&page=1".format(text)
-        data = self._ytdl.extract_info(YOUTUBE_SEARCH, download=False)
-        for song in data['entries']:
-            # print(song.get('title'))
-            songinfo = {}
-            songinfo['url'] = song.get('webpage_url')
-            songinfo['title'] = song.get('title')
-            songinfo['duration'] = song.get('duration')
-            result.append(songinfo)
-        return result
-
