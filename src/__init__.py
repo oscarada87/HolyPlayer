@@ -263,7 +263,7 @@ class Music(commands.Cog):
         await ctx.send("成功搞砸歌單!")
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(
-    "~"), description='Holy Player!')
+    "?"), description='Holy Player!')
 
 
 @bot.event
