@@ -7,38 +7,21 @@ import discord
 from discord.ext import commands
 
 
-class SingletonArgs(type):
-    _instances = {}
-    _init = {}
-
-    # dct 是 傳進來參數的字典
-    def __init__(cls, name, bases, dct):
-        cls._init[cls] = dct.get('__init__', None)
-
-    def __call__(cls, *args, **kwargs):
-        init = cls._init[cls]
-        # print(init)
-        # frozenset 會回傳一個不可再更動的集合
-        # inspect 是用來看 python 源碼和類型檢查的 module
-        # getcallargs 將args和kwargs参数到绑定到为func的参数名；返回字典，對應参数名及其值
-        if init is not None:
-            key = (cls, frozenset(inspect.getcallargs(init, None, *args, **kwargs).items()))
-        else:
-            key = cls
-
-        if key not in cls._instances:
-            cls._instances[key] = super(SingletonArgs, cls).__call__(*args, **kwargs)
-        return cls._instances[key]
-
-
-class Player(metaclass=SingletonArgs):
+class Player:
     """A class which is assigned to each guild using the bot for Music.
     This class implements a queue and loop, which allows for different guilds to listen to different playlists
     simultaneously.
     When the bot disconnects from the Voice it's instance will be destroyed.
     """
+    _instances = {}
 
     __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current')
+
+    def __call__(cls, ctx):
+        key = ctx.guild.id
+        if key not in cls._instances:
+            cls._instances[key] = cls.__call__(ctx)
+        return cls._instances[key]
 
     def __init__(self, ctx):
         self.bot = ctx.bot
