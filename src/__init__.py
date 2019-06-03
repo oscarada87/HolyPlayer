@@ -15,18 +15,13 @@ class Music(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.players = {}
 
     async def cleanup(self, guild):
         try:
             await guild.voice_client.disconnect()
         except AttributeError:
             pass
-
-        try:
-            del self.players[guild.id]
-        except KeyError:
-            pass
+        Player.delete_instances(guild.id)
 
     async def __local_check(self, ctx):
         """A local check which applies to all commands in this cog."""
