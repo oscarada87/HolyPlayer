@@ -5,7 +5,7 @@ from discord.ext import commands
 import itertools
 
 from .builder import Builder
-from .playlist import PlayList
+from .player import Player
 
 
 class Music(commands.Cog):
@@ -39,7 +39,7 @@ class Music(commands.Cog):
         try:
             player = self.players[ctx.guild.id]
         except KeyError:
-            player = PlayList(ctx)
+            player = Player(ctx)
             self.players[ctx.guild.id] = player
 
         return player
@@ -241,7 +241,7 @@ class Music(commands.Cog):
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(
-    "?"), description='Holy Player!')
+    "."), description='Holy Player!')
 
 
 @bot.event
