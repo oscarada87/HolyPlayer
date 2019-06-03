@@ -93,9 +93,9 @@ class Music(commands.Cog):
         item = Builder(search, ctx.author).get_item()
         for song in iter(item):
             await player.queue.put((2, song))
-            await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
-    
-    @commands.command(name='insert', aliases=['X', 'x','插播', '插'])
+            await ctx.send("成功加入歌曲：\n{}\n點歌者：\n{}".format(song.info['title'], song.info['request']))
+
+    @commands.command(name='insert', aliases=['X', 'x', '插播', '插'])
     async def insert_(self, ctx, *, search: str):
         await ctx.trigger_typing()
 
@@ -120,7 +120,7 @@ class Music(commands.Cog):
             return
 
         vc.pause()
-        await ctx.send(f'**`{ctx.author}`**: 暫停了撥放器!')
+        await ctx.send(f'**`{ctx.author}`**： 暫停了播放器！')
 
     @commands.command(name='resume')
     async def resume_(self, ctx):
@@ -132,7 +132,7 @@ class Music(commands.Cog):
             return
 
         vc.resume()
-        await ctx.send(f'**`{ctx.author}`**: 恢復了撥放器!')
+        await ctx.send(f'**`{ctx.author}`**： 恢復了播放器！')
 
     @commands.command(name='skip')
     async def skip_(self, ctx):
@@ -147,7 +147,7 @@ class Music(commands.Cog):
             return
 
         vc.stop()
-        await ctx.send(f'**`{ctx.author}`**: 跳過了這首歌!')
+        await ctx.send(f'**`{ctx.author}`**： 跳過了這首歌!')
 
     @commands.command(name='queue', aliases=['q', 'playlist'])
     async def queue_info(self, ctx, *, page=1):
@@ -166,7 +166,8 @@ class Music(commands.Cog):
         fmt = ''
         for item in upcoming:
             duration = self.seconds_to_minutes_string(item[1].info['duration'])
-            fmt += "**{} | {} \n:pencil2:by:{}`**\n".format(item[1].info["title"], duration, item[1].info['request'])
+            fmt += "**{} | {} \n:pencil2:by:{}`**\n".format(
+                item[1].info["title"], duration, item[1].info['request'])
         embed = discord.Embed(title=f'播放佇列 - 第{page}頁', description=fmt)
 
         await ctx.send(embed=embed)
@@ -189,7 +190,7 @@ class Music(commands.Cog):
             return await ctx.send('I am not currently playing anything!')
         else:
             song = player.current
-        await ctx.send('**:musical_note:現正撥放:musical_note: **\n {} \n:ballot_box_with_check:requested by\n{}'.format(song.info['title'], song.info['request']))
+        await ctx.send('**:musical_note:現正播放:musical_note: **\n {} \n:ballot_box_with_check:requested by\n{}'.format(song.info['title'], song.info['request']))
 
     @commands.command(name='stop', aliases=['dc', 'fuckoff', '滾', '發大財'])
     async def stop_(self, ctx):
@@ -210,5 +211,6 @@ async def on_ready():
     print('Logged in as {0} ({0.id})'.format(bot.user))
     print('------')
 
-bot.add_cog(Music(bot))
+if __name__ == '__main__':
+    bot.add_cog(Music(bot))
 bot.run(BOT_TOKEN, bot=True, reconnect=True)
