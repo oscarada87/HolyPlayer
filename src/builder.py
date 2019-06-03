@@ -54,13 +54,13 @@ class Builder():
             self._song_info['playlist'] = data.get('title')
             song_list = SongList(self._song_list_info)
             for song in data['entries']:
-                self._ytdl.download(YOUTUBE_WEBSITE + song.get('id'))
+                self._ytdl.extract_info(YOUTUBE_WEBSITE + song.get('id'), download=True)
                 self._song_info['id'] = song.get('id')
                 self._song_info['url'] = YOUTUBE_WEBSITE + song.get('id')
                 self._song_info['title'] = song.get('title')
                 self._song_info['duration'] = int(song.get('duration'))
                 self._song_info['uploader'] = song.get('uploader')
-                self._song_info['file_locat'] = './downloads/' + data.get('id') + '.mp3'
+                self._song_info['file_locat'] = './downloads/' + song.get('id') + '.mp3'
                 song_list.add_song(Song(self._song_info))
             return song_list
         # keyword 為關鍵字

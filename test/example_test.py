@@ -1,19 +1,20 @@
 from unittest import TestCase
 import pytest
 
-# 測試用 Class 寫法
-# 暫時跳過
-@pytest.mark.skipif()
-class TestExample01(TestCase):
-    # 執行每個函數前會先執行這個
+
+class ExampleTest(TestCase):
+    """這裡教你怎麼寫出厲害的 Test Case！"""
+
     def setUp(self):
+        """測試前先建立好環境"""
         self.data1 = 87
         self.data2 = "Holy Player"
 
-    # 執行結束後會執行這個
     def tearDown(self):
+        """測試結束後收拾環境"""
         pass
 
     def test_example(self):
+        """測試測起來"""
         self.assertEqual(88, self.data1 + 1)
         self.assertEqual("Holy Player!", self.data2 + "!")
