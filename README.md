@@ -47,14 +47,18 @@
 
 ## Requirements
 
-- [discord.py](https://github.com/Rapptz/discord.py)
-- [youtube-dl](https://github.com/ytdl-org/youtube-dl)
+- Python 3.6+
 - [ffmpeg](https://ffmpeg.org/)
 
 ## Usage
 
-需要安裝 Python 3.7 、 ffmpeg 與 requirements.txt 裡的套件
-```
+1. 安裝 Python 3.6+
+2. 安裝 ffmpeg
+3. 安裝 requirements.txt 裡的套件
+```bash
 pip install -r requirements.txt
+```
+4. 執行程式
+```bash
 python app.py
 ```
