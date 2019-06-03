@@ -88,7 +88,7 @@ class Music(commands.Cog):
             await player.queue.put((2, song))
             await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
     
-    @commands.command(name='insert', aliases=['X', 'x','插播', '插'])
+    @commands.command(name='insert', aliases=['X', 'x', '插播', '插'])
     async def insert_(self, ctx, *, search: str):
         await ctx.trigger_typing()
 
@@ -192,9 +192,50 @@ class Music(commands.Cog):
 
         await self.cleanup(ctx.guild)
 
+    @commands.command(name='search', aliases=['s', '找'])
+    async def search_(self, ctx, *, keyword):
+        await ctx.trigger_typing()
+        embed = discord.Embed(title='搜尋結果', describtion='**請輸入要選取搜尋結果的編號!**')
+        builder = Builder(keyword, ctx.author)
+        results = builder.get_search()
+        for index, song in enumerate(results):
+            duration = self.seconds_to_minutes_string(song['duration'])
+            text = "{} [{}]".format(song['title'], duration)
+            title_text = str(index + 1)+'.'
+            embed.add_field(name=title_text, value=text, inline=False)
+        await ctx.send(embed=embed)
+
+        def check(m):
+            checklist = []
+            for i in range(20):
+                checklist.append(i+1)
+            try:
+                num = int(m.content)
+            except:
+                print("An Error occur!")
+            return m.author == ctx.author and m.channel == ctx.channel and num in checklist
+
+        try:
+            msg = await bot.wait_for('message', check=check, timeout=30)
+        except asyncio.TimeoutError:
+            await ctx.send(":x: 等候逾時 :x: ")
+
+        vc = ctx.voice_client
+
+        if not vc:
+            await ctx.invoke(self.connect_)
+        
+        player = self.get_player(ctx)
+        item = Builder(results[int(msg.content)-1]['url'],ctx.author).get_item()
+        for song in iter(item):
+            await player.queue.put((2, song))
+            await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
+
+
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),
                 description='Relatively simple music bot example')
+
 
 @bot.event
 async def on_ready():

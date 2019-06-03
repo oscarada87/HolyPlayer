@@ -3,7 +3,7 @@ import pytest
 from src.builder import Builder
 
 # 暫時跳過
-@pytest.mark.skipif()
+# @pytest.mark.skipif()
 class TestBuilder(TestCase):
     def setUp(self):
         self.song_url = "https://www.youtube.com/watch?v=7M6nsbieMks&ab_channel=SmashRegz"
