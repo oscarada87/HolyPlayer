@@ -211,6 +211,8 @@ class Music(commands.Cog):
                 num = int(m.content)
             except:
                 print("An Error occur!")
+                await ctx.send(":x: 錯誤產生! :x: ")
+                return False
             return m.author == ctx.author and m.channel == ctx.channel and num in checklist
 
         try:
