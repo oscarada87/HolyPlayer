@@ -25,7 +25,7 @@ class Song(Item):
         self._info['request'] = info['request']
         self._file_locat = info['file_locat']
         self._info['playlist'] = info['playlist']
-
+    
     @property
     def file_locat(self):
         return self._file_locat
@@ -47,8 +47,7 @@ class Song(Item):
     # iterator
     def __iter__(self):
         yield self
-
-
+    
 class SongList(Item):
     def __init__(self, info):
         super(SongList, self).__init__(info)
