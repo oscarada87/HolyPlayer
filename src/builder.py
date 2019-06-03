@@ -1,7 +1,5 @@
 import youtube_dl
-import urllib.parse
 from src.item import Song, SongList
-from pprint import pprint
 
 class Builder():
     def __init__(self, keyword, user):
@@ -38,11 +36,12 @@ class Builder():
         self._keyword = keyword
     
     def get_item(self):
+        YOUTUBE_WEBSITE = "https://www.youtube.com/watch?v="
         data = self._ytdl.extract_info(self._keyword, download=True)
         # keyword 為一首歌曲
         if data.get('_type') is None or data.get('_type') == 'video':
             self._song_info['id'] = data.get('id')
-            self._song_info['url'] = data.get('webpage_url')
+            self._song_info['url'] = YOUTUBE_WEBSITE + data.get('id')
             self._song_info['title'] = data.get('title')
             self._song_info['duration'] = int(data.get('duration'))
             self._song_info['uploader'] = data.get('uploader')
@@ -55,9 +54,9 @@ class Builder():
             self._song_info['playlist'] = data.get('title')
             song_list = SongList(self._song_list_info)
             for song in data['entries']:
-                self._ytdl.extract_info(song.get('webpage_url'), download=True)
+                self._ytdl.extract_info(YOUTUBE_WEBSITE + song.get('id'), download=True)
                 self._song_info['id'] = song.get('id')
-                self._song_info['url'] = song.get('webpage_url')
+                self._song_info['url'] = YOUTUBE_WEBSITE + song.get('id')
                 self._song_info['title'] = song.get('title')
                 self._song_info['duration'] = int(song.get('duration'))
                 self._song_info['uploader'] = song.get('uploader')
@@ -67,7 +66,7 @@ class Builder():
         # keyword 為關鍵字
         elif data.get('_type') == 'playlist':
             self._song_info['id'] = data['entries'][0].get('id')
-            self._song_info['url'] = data['entries'][0].get('webpage_url')
+            self._song_info['url'] = YOUTUBE_WEBSITE + data['entries'][0].get('id')
             self._song_info['title'] = data['entries'][0].get('title')
             self._song_info['duration'] = int(data['entries'][0].get('duration'))
             self._song_info['uploader'] = data['entries'][0].get('uploader')
@@ -77,17 +76,4 @@ class Builder():
         else:
             raise ValueError("Extract information failed!")
 
-    def get_search(self):
-        result = []
-        text = urllib.parse.quote(self._keyword)
-        YOUTUBE_SEARCH = "https://www.youtube.com/results?search_query={}&page=1".format(text)
-        data = self._ytdl.extract_info(YOUTUBE_SEARCH, download=False)
-        for song in data['entries']:
-            # print(song.get('title'))
-            songinfo = {}
-            songinfo['url'] = song.get('webpage_url')
-            songinfo['title'] = song.get('title')
-            songinfo['duration'] = song.get('duration')
-            result.append(songinfo)
-        return result
-
+            
