@@ -3,6 +3,7 @@ import discord
 from pprint import pprint
 from discord.ext import commands
 import itertools
+from random import shuffle
 
 from .builder import Builder
 from .player import Player
@@ -21,12 +22,12 @@ class Music(commands.Cog):
             await guild.voice_client.disconnect()
         except AttributeError:
             pass
-        Player.delete_instances(guild.id)
+        # Player.delete_instances(guild.id)
 
     async def __local_check(self, ctx):
         """A local check which applies to all commands in this cog."""
         if not ctx.guild:
-            raise commands.NoPrivateMessage
+            raise commands.NoPrivateMessage('Please don\'t private message the bot!')
         return True
 
     @commands.command(name='connect', aliases=['join'])
@@ -70,6 +71,7 @@ class Music(commands.Cog):
             await ctx.invoke(self.connect_)
 
         player = Player(ctx)
+        print(player)
         item = Builder(search, ctx.author).get_item()
         for song in iter(item):
             await player.queue.put((2, song))
@@ -224,6 +226,11 @@ class Music(commands.Cog):
             await player.queue.put((2, song))
             await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
 
+    @commands.command(name='shuffle', aliases=['random', '亂'])
+    async def shuffle_(self, ctx):
+        player = Player(ctx)
+        shuffle(player.queue._queue)
+        await ctx.send("成功搞砸歌單!")
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(
     "."), description='Holy Player!')

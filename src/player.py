@@ -6,8 +6,29 @@ from async_timeout import timeout
 import discord
 from discord.ext import commands
 
+class SingletonArgs(type):
+    _instances = {}
+    _init = {}
 
-class Player:
+    # dct 是 傳進來參數的字典
+    def __init__(cls, name, bases, dct):
+        cls._init[cls] = dct.get('__init__', None)
+
+    def __call__(cls, *args, **kwargs):
+        init = cls._init[cls]
+        if init is not None:
+            # print(inspect.getcallargs(init, None, *args, **kwargs)['ctx'])
+            key = (cls, inspect.getcallargs(init, None, *args, **kwargs)['ctx'].guild.id)
+        else:
+            key = cls
+        
+        if key not in cls._instances:
+            cls._instances[key] = super(SingletonArgs, cls).__call__(*args, **kwargs)
+
+        return cls._instances[key]
+
+
+class Player(metaclass=SingletonArgs):
     """A class which is assigned to each guild using the bot for Music.
     This class implements a queue and loop, which allows for different guilds to listen to different playlists
     simultaneously.
@@ -16,16 +37,6 @@ class Player:
     _instances = {}
 
     __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current')
-
-    def delete_instances(cls, guild_id):
-        if guild_id in cls._instances:
-            del cls._instances[guild_id]
-
-    def __call__(cls, ctx):
-        key = ctx.guild.id
-        if key not in cls._instances:
-            cls._instances[key] = cls.__call__(ctx)
-        return cls._instances[key]
 
     def __init__(self, ctx):
         self.bot = ctx.bot
