@@ -232,15 +232,16 @@ class Music(commands.Cog):
             await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
 
 
+def main():
+    bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='Holy Player!')
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),
-                description='Relatively simple music bot example')
+    @bot.event
+    async def on_ready():
+        print('Logged in as {0} ({0.id})'.format(bot.user))
+        print('------')
 
+    bot.add_cog(Music(bot))
+    bot.run(BOT_TOKEN, bot=True, reconnect=True)
 
-@bot.event
-async def on_ready():
-    print('Logged in as {0} ({0.id})'.format(bot.user))
-    print('------')
-
-bot.add_cog(Music(bot))
-bot.run(BOT_TOKEN, bot=True, reconnect=True)
+if __name__ == '__main__':
+    bot.run(BOT_TOKEN, bot=True, reconnect=True)
