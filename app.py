@@ -12,6 +12,7 @@ import itertools
 from src.builder import Builder
 from src.playlist import PlayList
 
+
 class Music(commands.Cog):
     """Music related commands."""
 
@@ -49,27 +50,33 @@ class Music(commands.Cog):
         return player
 
     @commands.command(name='connect', aliases=['join'])
-    async def connect_(self, ctx, *, channel: discord.VoiceChannel=None):
-        if not channel:
-            try:
-                channel = ctx.author.voice.channel
-            except AttributeError:
-                raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
+    async def connect_(self, ctx, *, channel: discord.VoiceChannel = None):
+        # 若 author 的 voice 不為空（代表有在某個 channel 中）
+        if ctx.author.voice:
+            channel = ctx.author.voice.channel
 
-        vc = ctx.voice_client
+            # 抓取 bot 當前的 voice_client
+            vc = ctx.voice_client
 
-        if vc:
-            if vc.channel.id == channel.id:
-                return
-            try:
-                await vc.move_to(channel)
-            except asyncio.TimeoutError:
-                raise VoiceConnectionError(f'Moving to channel: <{channel}> timed out.')
+            if vc is not None:
+                # 若頻道相同則不做事
+                if vc.channel.id == channel.id:
+                    return
+
+                try:
+                    await vc.move_to(channel)
+                except asyncio.TimeoutError:
+                    raise commands.CommandError(
+                        f'Moving to channel: <{channel}> timed out.')
+            else:
+                try:
+                    await channel.connect()
+                except asyncio.TimeoutError:
+                    raise commands.CommandError(
+                        f'Connecting to channel: <{channel}> timed out.')
         else:
-            try:
-                await channel.connect()
-            except asyncio.TimeoutError:
-                raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
+            raise commands.CommandError(
+                'No channel to join. Please either specify a valid channel or join one.')
 
         await ctx.send(f'Connected to: **{channel}**', delete_after=20)
 
@@ -114,7 +121,7 @@ class Music(commands.Cog):
 
         vc.pause()
         await ctx.send(f'**`{ctx.author}`**: 暫停了撥放器!')
-    
+
     @commands.command(name='resume')
     async def resume_(self, ctx):
         vc = ctx.voice_client
@@ -141,7 +148,7 @@ class Music(commands.Cog):
 
         vc.stop()
         await ctx.send(f'**`{ctx.author}`**: 跳過了這首歌!')
-    
+
     @commands.command(name='queue', aliases=['q', 'playlist'])
     async def queue_info(self, ctx, *, page=1):
         vc = ctx.voice_client
@@ -154,7 +161,8 @@ class Music(commands.Cog):
             return await ctx.send('There are currently no more queued songs.')
 
         # Grab up to 5 entries from the queue...
-        upcoming = list(itertools.islice(player.queue._queue, (page-1)*10, page*10))
+        upcoming = list(itertools.islice(
+            player.queue._queue, (page-1)*10, page*10))
         fmt = ''
         for item in upcoming:
             duration = self.seconds_to_minutes_string(item[1].info['duration'])
@@ -194,7 +202,8 @@ class Music(commands.Cog):
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),
-                description='Relatively simple music bot example')
+                   description='Relatively simple music bot example')
+
 
 @bot.event
 async def on_ready():
