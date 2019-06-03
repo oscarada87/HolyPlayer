@@ -2,6 +2,7 @@ import youtube_dl
 import urllib.parse
 from src.item import Song, SongList
 from pprint import pprint
+import uuid
 
 class Builder():
     def __init__(self, keyword, user):
@@ -38,6 +39,11 @@ class Builder():
         self._keyword = keyword
     
     def get_item(self):
+        extra_name = '_' + str(uuid.uuid1())[0:4]
+        self._ytdl_options['outtmpl'] = 'downloads/%(id)s' + extra_name + '.mp3'
+        self._ytdl = youtube_dl.YoutubeDL(self._ytdl_options)
+
+
         data = self._ytdl.extract_info(self._keyword, download=True)
         # keyword 為一首歌曲
         if data.get('_type') is None or data.get('_type') == 'video':
@@ -46,7 +52,8 @@ class Builder():
             self._song_info['title'] = data.get('title')
             self._song_info['duration'] = int(data.get('duration'))
             self._song_info['uploader'] = data.get('uploader')
-            self._song_info['file_locat'] = './downloads/' + data.get('id') + '.mp3'
+            # self._song_info['file_locat'] = './downloads/' + data.get('id') + '.mp3'
+            self._song_info['file_locat'] = './downloads/' + data.get('id') + extra_name + '.mp3'
             return Song(self._song_info)
         # keyword 為歌單
         elif 'youtu' in self._keyword and data.get('_type') == 'playlist':
@@ -61,7 +68,8 @@ class Builder():
                 self._song_info['title'] = song.get('title')
                 self._song_info['duration'] = int(song.get('duration'))
                 self._song_info['uploader'] = song.get('uploader')
-                self._song_info['file_locat'] = './downloads/' + song.get('id') + '.mp3'
+                # self._song_info['file_locat'] = './downloads/' + song.get('id') + '.mp3'
+                self._song_info['file_locat'] = './downloads/' + song.get('id') + extra_name + '.mp3'
                 song_list.add_song(Song(self._song_info))
             return song_list
         # keyword 為關鍵字
@@ -71,7 +79,8 @@ class Builder():
             self._song_info['title'] = data['entries'][0].get('title')
             self._song_info['duration'] = int(data['entries'][0].get('duration'))
             self._song_info['uploader'] = data['entries'][0].get('uploader')
-            self._song_info['file_locat'] = './downloads/' + data['entries'][0].get('id') + '.mp3'
+            # self._song_info['file_locat'] = './downloads/' + data['entries'][0].get('id') + '.mp3'
+            self._song_info['file_locat'] = './downloads/' + data['entries'][0].get('id') + extra_name + '.mp3'
             return Song(self._song_info)
         
         else:
