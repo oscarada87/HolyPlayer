@@ -17,6 +17,10 @@ class Player:
 
     __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current')
 
+    def delete_instances(cls, guild_id):
+        if guild_id in cls._instances:
+            del cls._instances[guild_id]
+
     def __call__(cls, ctx):
         key = ctx.guild.id
         if key not in cls._instances:
