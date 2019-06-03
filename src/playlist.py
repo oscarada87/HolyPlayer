@@ -69,7 +69,7 @@ class PlayList(metaclass=SingletonArgs):
             self.current = song
             source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(song.file_locat))
             self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
-            await self._channel.send('**:musical_note:現正撥放:musical_note: **\n {} \n:ballot_box_with_check:requested by\n{}'.format(song.info['title'], song.info['request']))
+            await self._channel.send('**:musical_note:現正播放：musical_note: **\n {} \n:ballot_box_with_check:requested by\n{}'.format(song.info['title'], song.info['request']))
             # source.volume = self.volume
             # print(self.next.is_set())
             await self.next.wait()
