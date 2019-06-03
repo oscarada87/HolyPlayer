@@ -197,7 +197,7 @@ class Music(commands.Cog):
         await self.cleanup(ctx.guild)
 
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),
                    description='Relatively simple music bot example')
 
 
