@@ -226,11 +226,13 @@ class Music(commands.Cog):
             await player.queue.put((2, song))
             await ctx.send("成功加入歌曲:\n{}\n點歌者:\n{}".format(song.info['title'], song.info['request']))
 
-    @commands.command(name='shuffle', aliases=['random', '亂'])
+    @commands.command(name='shuffle', aliases=['random', 'r', '亂'])
     async def shuffle_(self, ctx):
-        player = Player(ctx)
+        player = Player(ctx)      
         shuffle(player.queue._queue)
-        await ctx.send("成功搞砸歌單!")
+        await ctx.send("**{}** 成功搞砸歌單！:warning:".format(ctx.author))
+
+
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(
     "."), description='Holy Player!')
