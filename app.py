@@ -1,5 +1,5 @@
-# Config
-from src.Config import BOT_TOKEN
+from src import bot
+from config import BOT_TOKEN
 
 # Library
 import asyncio
