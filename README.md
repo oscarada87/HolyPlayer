@@ -22,13 +22,7 @@
 
 - [x] 歌曲搜尋
     - [x] 在 YouTube 上搜尋關鍵字給予結果
-<!--
-- [ ] 權限管理
-    - [ ] 管理員所有操作
-    - [ ] 只有管理員才能夠編輯播放佇列的模式
-    - [ ] 普通使用者刪歌要投票
-    - [ ] 普通使用者跳歌要投票
--->
+
 - [ ] 播放佇列
     - [x] 輸入 YouTube 連結將歌曲或歌單加入播放佇列
     - [x] 查看播放佇列
@@ -77,8 +71,6 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 
 ![](https://i.imgur.com/p0HaTsA.png)
 
-
-
 ## The Patterns We Use
 
 我們使用的 patterns 有 **Iterator Pattern**、**Builder Pattern**、**Singleton Pattern** 
@@ -86,20 +78,39 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 ### Iterator Pattern
 
 #### Problem
+
 當需要存取 Item 內歌曲的資料時，需要有一種方法能提供 access
 
 #### Solution
+
 透過 iterator 後 access Item 中的資料。
 
 > Python 的 iterator 可以透過 iter() 函數取得，在這裡我們覆寫 song 和 songlist 中的 __iter__()，在呼叫 iter(song) 或 iter(songlist) 後會取得一個生成器(generator)，生成器有點像是執行函數期間可以回傳不只一個結果，透過 yeild 關鍵字實作，它也是 iterator 的一種但多了一些特性，第一生成器具有消耗性，因此它只有next()沒有previous()，第二生成器可以在執行間傳參數，第三生成器可以隨時終止。
 
+## Diagram
+
+[draw.io](https://drive.google.com/file/d/1-rCvsJBhQY0WDYrYn_gU33B3nHOqq_ho/view?usp=sharing)
+
+![](https://i.imgur.com/qulcsn9.png)
+
+## The Patterns We Use
+
+我們使用的 patterns 有：
+
+- Composite Pattern
+- Iterator Pattern
+- Builder Pattern
+- Singleton Pattern
+
 ### Composite Pattern
 
-- Item
-Song 和 SongList 的父類別，為了讓 Song 和 SongList 實現多型（polymorphism），像是 **add_song** 和 **info** 的 getter
+#### Problem
 
-- SongList
-允許底下新增 Song 或 SongList 的物件。
+系統中有部分的操作在面對歌曲（`Song`）或是歌單（`SongList`）等等不同播放單位的物件時需要有不一樣的處理方式，但是有些方法卻又是共通的。實作得各自獨立可能又會有許多繁冗的程式碼，未來如果需要新增其他播放單位時可能又需要在專案的各處四處修改，可能會增加 bug 出現的機率。
+
+#### Solution
+
+我們定義了一個播放單位的抽象介面：`Item`，在其中要求繼承它的類別實作特定的介面（例如 `add_song()` 和 `info()` 等方法），讓外部不需要了解這是什麼播放單位就可以進行操作。未來如果新增其他播放單位，也只需要定義新的類別即可。
 
 
 ### Builder Pattern
