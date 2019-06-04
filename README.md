@@ -22,7 +22,13 @@
 
 - [x] 歌曲搜尋
     - [x] 在 YouTube 上搜尋關鍵字給予結果
-
+<!--
+- [ ] 權限管理
+    - [ ] 管理員所有操作
+    - [ ] 只有管理員才能夠編輯播放佇列的模式
+    - [ ] 普通使用者刪歌要投票
+    - [ ] 普通使用者跳歌要投票
+-->
 - [ ] 播放佇列
     - [x] 輸入 YouTube 連結將歌曲或歌單加入播放佇列
     - [x] 查看播放佇列
@@ -69,28 +75,6 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 
 [draw.io](https://drive.google.com/file/d/1-rCvsJBhQY0WDYrYn_gU33B3nHOqq_ho/view?usp=sharing)
 
-![](https://i.imgur.com/p0HaTsA.png)
-
-## The Patterns We Use
-
-我們使用的 patterns 有 **Iterator Pattern**、**Builder Pattern**、**Singleton Pattern** 
-
-### Iterator Pattern
-
-#### Problem
-
-當需要存取 Item 內歌曲的資料時，需要有一種方法能提供 access
-
-#### Solution
-
-透過 iterator 後 access Item 中的資料。
-
-> Python 的 iterator 可以透過 iter() 函數取得，在這裡我們覆寫 song 和 songlist 中的 __iter__()，在呼叫 iter(song) 或 iter(songlist) 後會取得一個生成器(generator)，生成器有點像是執行函數期間可以回傳不只一個結果，透過 yeild 關鍵字實作，它也是 iterator 的一種但多了一些特性，第一生成器具有消耗性，因此它只有next()沒有previous()，第二生成器可以在執行間傳參數，第三生成器可以隨時終止。
-
-## Diagram
-
-[draw.io](https://drive.google.com/file/d/1-rCvsJBhQY0WDYrYn_gU33B3nHOqq_ho/view?usp=sharing)
-
 ![](https://i.imgur.com/qulcsn9.png)
 
 ## The Patterns We Use
@@ -112,19 +96,31 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 
 我們定義了一個播放單位的抽象介面：`Item`，在其中要求繼承它的類別實作特定的介面（例如 `add_song()` 和 `info()` 等方法），讓外部不需要了解這是什麼播放單位就可以進行操作。未來如果新增其他播放單位，也只需要定義新的類別即可。
 
+### Iterator Pattern
+
+#### Problem
+當我們需要查看不同播放單位的歌曲資料時，如果直接將資料成員回傳予外部使用，會破壞物件的封裝性。
+
+#### Solution
+我們透過實作類別中的 `__iter__()` 來實現 Iterator Pattern，外部欲取得物件內的資料成員時，可以透過 `iter()` 函式取得 Python 的
+
 
 ### Builder Pattern
 
-problem：
+#### Problem
+
 當使用者使用 **play** 指令並輸入參數後，需透過第三方 API 取得資料內容，生成「Song」或「SongList」物件，並且兩者建構元是不同且複雜的，造成介面不乾淨。
 
-sol：
+#### Solution
+
 當 user 下達**新增歌曲或歌單**的指令後，用比較「系統化」且「輕鬆」的放式，讓 builder 去建制 Song 或是 SongList 的介面並加入播放佇列中，。
 
 ### Singleton Pattern
 
-problem：
+#### Problem
+
 當不同的使用者要對播放佇列進行操作時，沒有辦法取得相同的播放佇列。
 
-solu：
+#### Solution
+
 當使用者需要對播放佇列進行操作時，會根據 **guild_id** 取得**唯一**的播放佇列。
