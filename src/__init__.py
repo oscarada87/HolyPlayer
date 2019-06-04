@@ -10,7 +10,7 @@ from .player import Player
 import urllib.parse
 from youtube_dl import YoutubeDL
 
-from .search import get_search2
+from .search import get_search
 
 class Music(commands.Cog):
     """Music related commands."""
