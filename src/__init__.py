@@ -190,7 +190,7 @@ class Music(commands.Cog):
     async def search_(self, ctx, *, keyword):
         await ctx.trigger_typing()
         embed = discord.Embed(title='搜尋結果', describtion='**請輸入要選取搜尋結果的編號!**')
-        results = get_search2(keyword)
+        results = get_search(keyword)
         for index, song in enumerate(results):
             duration = self.seconds_to_minutes_string(song['duration'])
             text = "{} [{}]".format(song['title'], duration)
