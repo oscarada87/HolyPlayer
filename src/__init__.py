@@ -10,6 +10,8 @@ from .player import Player
 import urllib.parse
 from youtube_dl import YoutubeDL
 
+from .search import get_search2
+
 class Music(commands.Cog):
     """Music related commands."""
 
@@ -218,7 +220,7 @@ class Music(commands.Cog):
     async def search_(self, ctx, *, keyword):
         await ctx.trigger_typing()
         embed = discord.Embed(title='搜尋結果', describtion='**請輸入要選取搜尋結果的編號!**')
-        results = self.get_search(keyword)
+        results = get_search2(keyword)
         for index, song in enumerate(results):
             duration = self.seconds_to_minutes_string(song['duration'])
             text = "{} [{}]".format(song['title'], duration)
