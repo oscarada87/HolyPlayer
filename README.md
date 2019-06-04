@@ -102,7 +102,7 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 當我們需要查看不同播放單位的歌曲資料時，如果直接將資料成員回傳予外部使用，會破壞物件的封裝性。
 
 #### Solution
-我們透過實作類別中的 `__iter__()` 來實現 Iterator Pattern，外部欲取得物件內的資料成員時，可以透過 `iter()` 函式取得 Python 的
+我們透過實作類別中的 `__iter__()` 來實現 Iterator Pattern，外部欲取得物件內的資料成員時，可以透過 `iter()` 函式取得其 Generator 物件，讓外部一次一個元素、依序存取。
 
 
 ### Builder Pattern
