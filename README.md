@@ -111,11 +111,11 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 
 #### Problem
 
-當使用者使用 `?play` 指令並輸入歌曲或歌單的關鍵字後，我們需要透過第三方套件取得網路上歌曲的相關資訊，並藉其產生 `Song` 或 `SongList` 物件，在建立時需要先做額外的判斷以確定要建立的物件為何，並且兩者建構元是不同且複雜的。
+當使用者使用 ?play 指令並輸入歌曲或歌單的關鍵字後，我們需要透過第三方套件取得網路上歌曲的相關資訊，並藉其產生 Song 或 SongList 物件，在建立時需要先做額外的判斷以確定要建立的物件為何，並且兩者建構元是不同且複雜的。
 
 #### Solution
 
-我們把建立 `Song` 和 `SongList` 的前置任務轉移到了一個獨立的 `Builder` 類別，我們將參數傳入 builder 後，藉由內部的判斷邏輯來決定要建立 `Song` 或是 `SongList` 物件。因為這個過程會需要呼叫第三方套件的方法，所以也讓 `Song` 和 `SongList` 類別不會與第三方套件產生耦合。
+我們把建立 Song 和 SongList 的前置任務轉移到了一個獨立的 Builder 類別，我們將參數傳入 builder 後，藉由內部的判斷邏輯來決定要建立 Song 或是 SongList 物件。因為這個過程會需要呼叫第三方套件的方法，所以在建立 Song 和 SongList 類別時不會與第三方套件產生耦合，只需要 import builder 即可。
 
 ### Singleton Pattern
 
