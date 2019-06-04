@@ -32,7 +32,6 @@ class SongTest(TestCase):
         self.assertEqual(self.song_info['uploader'], self.song.info['uploader'])
         self.assertEqual(self.song_info['request'], self.song.info['request'])
         self.assertEqual(self.song_info['file_locat'], self.song.file_locat)
-        self.assertFalse(self.song.info['playlist'])
 
         with self.assertRaises(TypeError) as context:
             self.song.add_song()
