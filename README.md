@@ -75,7 +75,7 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 
 [draw.io](https://drive.google.com/file/d/1-rCvsJBhQY0WDYrYn_gU33B3nHOqq_ho/view?usp=sharing)
 
-![](https://i.imgur.com/qulcsn9.png)
+![](https://i.imgur.com/G3eklpl.png)
 
 ## The Patterns We Use
 
