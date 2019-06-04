@@ -6,6 +6,7 @@ from async_timeout import timeout
 import discord
 from discord.ext import commands
 
+
 class SingletonArgs(type):
     _instances = {}
     _init = {}
@@ -21,11 +22,16 @@ class SingletonArgs(type):
             key = (cls, inspect.getcallargs(init, None, *args, **kwargs)['ctx'].guild.id)
         else:
             key = cls
-        
+
         if key not in cls._instances:
             cls._instances[key] = super(SingletonArgs, cls).__call__(*args, **kwargs)
 
         return cls._instances[key]
+
+    def delete(cls, guild):
+        key = (cls, guild.id)
+        if key in cls._instances:
+            del cls._instances[key]
 
 
 class Player(metaclass=SingletonArgs):
@@ -34,7 +40,6 @@ class Player(metaclass=SingletonArgs):
     simultaneously.
     When the bot disconnects from the Voice it's instance will be destroyed.
     """
-    _instances = {}
 
     __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current')
 

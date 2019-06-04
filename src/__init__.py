@@ -39,7 +39,7 @@ class Music(commands.Cog):
             await guild.voice_client.disconnect()
         except AttributeError:
             pass
-        # Player.delete_instances(guild.id)
+        Player.delete(guild)
 
     async def __local_check(self, ctx):
         """A local check which applies to all commands in this cog."""
