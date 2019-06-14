@@ -67,6 +67,6 @@ I/O 操作會在 Discord 上，故只對我們寫的 class 做 unit test。
 
 ## Contributors
 
-- 江俊廷 (oscarada87)[https://github.com/oscarada87]
-- 林　凭 (Pin Lin)[https://github.com/PinLin]
+- 江俊廷 [oscarada87](https://github.com/oscarada87)
+- 林　凭 [Pin Lin](https://github.com/PinLin)
 - 楊永健
