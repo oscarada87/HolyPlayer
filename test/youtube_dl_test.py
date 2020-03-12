@@ -1,7 +1,7 @@
 from unittest import TestCase
 from youtube_dl import YoutubeDL
 
-
+@pytest.mark.skipif()
 class YoutubeDlTest(TestCase):
     """測試 youtube_dl"""
 
