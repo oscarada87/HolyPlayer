@@ -1,5 +1,6 @@
 from unittest import TestCase
 from youtube_dl import YoutubeDL
+import pytest
 
 @pytest.mark.skipif()
 class YoutubeDlTest(TestCase):
