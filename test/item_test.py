@@ -1,3 +1,6 @@
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
 from unittest import TestCase
 from src.item import Item, Song, SongList
 
